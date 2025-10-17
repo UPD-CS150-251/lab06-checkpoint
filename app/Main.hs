@@ -55,7 +55,7 @@ update MsgSubmit = do
 
   let f = const MsgNoOp :: (Response String -> Msg)
 
-  getText ("http://" <> ms serverIpAddr <> ":" <> ms serverPort) [] (\r -> MsgGotResponse r.body) f
+  putText ("http://" <> ms serverIpAddr <> ":" <> ms serverPort) model.code [] (\r -> MsgGotResponse r.body) f
 
 --
 update (MsgGotResponse resp) = do
