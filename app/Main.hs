@@ -13,6 +13,8 @@ import Miso.Fetch
 import qualified Miso.Html as H
 import qualified Miso.Html.Property as P
 import Miso.String (fromMisoString, ms)
+import Language.Javascript.JSaddle (toJSVal)
+import Language.Javascript.JSaddle.Monad (JSM)
 
 serverIpAddr :: Text
 serverIpAddr = "10.0.100.197"
@@ -41,7 +43,7 @@ data Msg
   | MsgGotResponse M.MisoString
   | MsgNoOp
   deriving (Show, Eq)
-
+ 
 update :: Msg -> M.Transition Model Msg
 update (MsgUpdateCode code) = do
   model <- M.get
@@ -53,9 +55,11 @@ update MsgSubmit = do
   let model' = model {code = "", request = Pending}
   M.put model'
 
-  let f = const MsgNoOp :: (Response String -> Msg)
+  let f = const (pure ()) :: Response () -> JSM ()
 
-  putText ("http://" <> ms serverIpAddr <> ":" <> ms serverPort) model.code [] (\r -> MsgGotResponse r.body) f
+  M.withSink $ \dispatch -> do
+    x <- toJSVal True
+    fetch ("http://" <> ms serverIpAddr <> ":" <> ms serverPort) "POST" (Just x) [] (\(Response _ _ _ r) -> dispatch (MsgGotResponse r)) f TEXT
 
 --
 update (MsgGotResponse resp) = do
