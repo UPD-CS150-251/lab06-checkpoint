@@ -58,7 +58,7 @@ update MsgSubmit = do
   let f = const (pure ()) :: Response () -> JSM ()
 
   M.withSink $ \dispatch -> do
-    x <- toJSVal True
+    x <- toJSVal model.code
     fetch ("http://" <> ms serverIpAddr <> ":" <> ms serverPort) "POST" (Just x) [] (\(Response _ _ _ r) -> dispatch (MsgGotResponse r)) f TEXT
 
 --
