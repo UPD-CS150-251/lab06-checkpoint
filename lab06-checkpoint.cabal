@@ -25,6 +25,6 @@ executable lab06-checkpoint
   hs-source-dirs:
     app
   build-depends:
-    base, miso, req, text, modern-uri
+    base, miso, text
   default-language:
     Haskell2010
